@@ -8,7 +8,7 @@
 
 constexpr float PI = 3.1415;
 
-struct Camera {
+class Camera {
     vec3f location;
     vec3f up;
     vec3f right;
@@ -19,6 +19,7 @@ struct Camera {
     float screen_dist;
     vec3f leftdown_screen_angle;
     float pixel_size;
+public:
     Camera (vec3f& location_vec, vec3f& view_vec, vec2f& phisical_screensize, vec2u& screensize, float input_fov);
     Ray Gen_ray(unsigned x, unsigned y);            //generates origin ray
     void Render(Image& screenBuffer, Scene& scene); //renders the image of the scene to buffer

@@ -9,10 +9,10 @@
 //--------ALL DEFINED CLASSES-------------------------
 class Material;
 class OrdinaryMaterial;
+class DiffuseMaterial;
 class Scene;
 class Object;
 class PolygonalObject;
-class GeometricObject;
 class Sphere;
 //----------------------------------------------------
 
@@ -29,7 +29,6 @@ struct Polygon{
     unsigned second_vertex;
     unsigned third_vertex;
     vec3f normal;
-    Material* material;
 };
 
 //--------------MATERIALS------------------------------
@@ -41,15 +40,29 @@ public:
     virtual vec3f GetRayColour(Ray& ray) const = 0;
 };
 
-class OrdinaryMaterial : public Material {
+class EmissiveMaterial : public Material {
     vec3f colour;
 public:
-    OrdinaryMaterial(vec3f& in_colour) { colour = in_colour; };
+    EmissiveMaterial(vec3f& in_colour) { colour = in_colour; };
     vec3f GetRayColour(Ray& ray) const { return colour; };
 };
+
+class DiffuseMaterial : public Material {
+    vec3f colour;
+    float fuzzieness;
+    float albedo;
+public:
+    DiffuseMaterial(vec3f& in_colour, float in_fuzzieness, float in_albedo) : colour(in_colour), fuzzieness(in_fuzzieness), albedo(in_albedo) {};
+    vec3f GetColour() const { return colour; };
+    float GetFuzzieness() const { return fuzzieness; };
+    float GetAlbedo() const { return albedo; };
+    vec3f GetRayColour(Ray& ray) const ;
+};
+
 //------------------------------------------------------
 
 //_______class Scene for storing graphic objects________
+
 class Scene {
     std::vector<Object*> objects;
 public:
@@ -60,10 +73,14 @@ public:
 //-------OBJECTS-----------------------------------------
 
 //_______base object class_______________________________
+
 class Object {
+    Material* material;
 public:
+    Object(Material* in_material) { material = in_material; };
     virtual bool Hitted(Ray& ray, vec3f& hitpoint) const = 0;
-    virtual vec3f GetRayColour(Ray& ray) const = 0;
+    virtual vec3f GetRayColour(Ray& ray) const { return material -> GetRayColour(ray); }
+    Material* GetMaterial() const { return material; };
 };
 
 //________polygonal object class_________________________
@@ -72,32 +89,36 @@ class PolygonalObject : public Object{
     std::vector<Vertex> vertexes;
     std::vector<Polygon> polygons;
 public:
-    PolygonalObject(Material& in_material, const std::string& objfile_path);
+    PolygonalObject(Material* in_material, const std::string& objfile_path);
     bool Hitted(Ray& ray, vec3f& hitpoint) const;
     virtual vec3f GetRayColour(Ray& ray) const;
     ~PolygonalObject();
 };
 
-//________geometric object class_________________________
-class GeometricObject : public Object{
-    Material* material;
-public:
-    GeometricObject(Material* in_material) { material = in_material; };
-    Material* GetMaterial() const { return material; };
-    virtual bool Hitted(Ray& ray, vec3f& hitpoint) const = 0;
-    virtual vec3f GetRayColour(Ray& ray) const = 0;
-};
-
 //________class for spheres_______________________________
-class Sphere : public GeometricObject {
+
+class Sphere : public Object {
     vec3f center;
     float radius;
 public:
-    Sphere(Material* in_material, vec3f& in_center, float in_radius) : GeometricObject(in_material) { center = in_center; radius = in_radius; };
+    Sphere(Material* in_material, vec3f& in_center, float in_radius) : Object(in_material), center(in_center), radius(in_radius) {};
     vec3f GetCenter() const { return center; };
     float GetRadius() const { return radius; };
     bool Hitted(Ray& ray, vec3f& hitpoint) const;
-    vec3f GetRayColour(Ray& ray) const;
+};
+
+//________class for Cilinders_________________________________
+
+class Cilinder : public Object {
+    vec3f center;
+    float radius;
+    float height;
+public:
+    Cilinder(Material* in_material, vec3f& in_center, float in_radius, float in_height);
+    vec3f GetCenter() const { return center; };
+    float GetRadius() const { return radius; };
+    float GetHeight() const { return height; };
+    bool Hitted(Ray& ray, vec3f& hitpoint) const;
 };
 
 //--------------------------------------------------------
