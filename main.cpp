@@ -61,38 +61,44 @@ int main(int argc, char** argv) {
 
     Image screenBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, 4); //buffer to render in
     
-    vec3f colour1(0.8f, 0.5f, 0.5f); 
+    vec3f colour1(0.9f, 0.9f, 0.9f); 
     vec3f colour2(0.5f, 0.5f, 0.8f);
-    vec3f colour3(0.3f, 0.3f, 0.3f);
+    vec3f colour3(0.4f, 0.4f, 0.4f);
 
     EmissiveMaterial emissive1(colour1);
     EmissiveMaterial emissive2(colour2);
     EmissiveMaterial emissive3(colour3);
+    DielectricMaterial glass(1.5f, 1.0f);
 
 //-------sphere creation------------------------------------------------------------
 
-    vec3f sphere_center(0.0f, 0.0f, 3.0f);
+    vec3f sphere_center(0.0f, 0.0f, 0.0f);
 
-    Sphere sphere(&emissive1, sphere_center, 2.0f);
+    vec3f sphere_center1(2.5f, -4.0f, 0.0f);
+
+    Sphere sphere(&glass, sphere_center, 2.0f);
+
+    Sphere sphere1(&emissive1, sphere_center1, 1.0f);
 
 //----------------------------------------------------------------------------------
 
 //-------cilinder creation----------------------------------------------------------
 
-    vec3f pedestal_center(0.0f, 0.0f, 0.5f);
+    vec3f pedestal_center(0.0f, 0.0f, -2.5f);
     Cilinder pedestal(&emissive2, pedestal_center, 2.0f, 1.0f);
-    vec3f table_center(0.0f, 0.0f, 0.0f);
+    vec3f table_center(0.0f, 0.0f, -3.0f);
     Cilinder table(&emissive3, table_center, 10.0f, 1.0f);
 
 //---------scene creation-----------------------------------------------------------
     Scene scene;
     scene.AddObject(&sphere);
-    scene.AddObject(&pedestal);
+//    scene.AddObject(&pedestal);
     scene.AddObject(&table);
+    scene.AddObject(&sphere1);
 //----------------------------------------------------------------------------------
     
 //---------camera creation----------------------------------------------------------
-    vec3f cam_location(0.0f, 15.0f, 6.0f);
+    vec3f cam_location(0.0f, 5.0f, 2.0f);
     vec3f viewvec = sphere_center - cam_location;
     vec2f phisical_screensize(2.0f, 2.0f);
     vec2u pixel_screensize(WINDOW_WIDTH, WINDOW_HEIGHT);

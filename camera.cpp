@@ -32,7 +32,7 @@ Camera::Camera(vec3f& location_vec, vec3f& view_vec, vec2f& in_phisical_screensi
 
 Ray Camera::Gen_ray(unsigned x, unsigned y) {
     vec3f pixel_coords(leftdown_screen_angle + (up * pixel_size * y) + (right * pixel_size * x));
-    Ray ray(pixel_coords - location, location, 1.0f, 1.0f);
+    Ray ray(pixel_coords - location, location, 1.0f, 0);
     return ray;
 }
 
@@ -41,7 +41,7 @@ void Camera::Render(Image& screenBuffer, Scene& scene) {
     vec3f colour;
     for (unsigned i = 0; i < pixel_screensize.y; i++) {
         for (unsigned j  = 0; j < pixel_screensize.x; j++) {
-            if (i == 256 && j == 256)
+            if (i == 512 && j == 512)
                 colour = colour * 2;
             Ray origin_ray = Gen_ray(j, i);
             colour = scene.Intersect(origin_ray);

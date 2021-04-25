@@ -16,6 +16,11 @@ class PolygonalObject;
 class Sphere;
 //----------------------------------------------------
 
+enum Side{
+    INSIDE,
+    OUTSIDE
+};
+
 //_______struct vertex for polygonal objects__________
 struct Vertex{
     float x;
@@ -37,14 +42,22 @@ struct Polygon{
 
 class Material {
 public:
-    virtual vec3f GetRayColour(Ray& ray) const = 0;
+    virtual vec3f GetRayColour(const Ray& ray, const vec3f& hitpoint, const vec3f& normal, const Side& side, const Scene& scene) const = 0;
 };
 
 class EmissiveMaterial : public Material {
     vec3f colour;
 public:
     EmissiveMaterial(vec3f& in_colour) { colour = in_colour; };
-    vec3f GetRayColour(Ray& ray) const { return colour; };
+    vec3f GetRayColour(const Ray& ray, const vec3f& hitpoint, const vec3f& normal, const Side& side, const Scene& scene) const { return colour; };
+};
+
+class DielectricMaterial : public Material {
+    float inner_refractive_index;
+    float outer_refractive_index;
+public:
+    DielectricMaterial(float in_inner_refractive_index, float in_outer_refractive_index) : inner_refractive_index(in_inner_refractive_index), outer_refractive_index(in_outer_refractive_index) {};
+    vec3f GetRayColour(const Ray& ray, const vec3f& hitpoint, const vec3f& normal, const Side& side, const Scene& scene) const;
 };
 
 class DiffuseMaterial : public Material {
@@ -67,7 +80,7 @@ class Scene {
     std::vector<Object*> objects;
 public:
     void AddObject(Object* new_object) { objects.push_back(new_object); }
-    vec3f Intersect (Ray& ray);
+    vec3f Intersect (const Ray& ray) const;
 };
 
 //-------OBJECTS-----------------------------------------
@@ -78,8 +91,8 @@ class Object {
     Material* material;
 public:
     Object(Material* in_material) { material = in_material; };
-    virtual bool Hitted(Ray& ray, vec3f& hitpoint) const = 0;
-    virtual vec3f GetRayColour(Ray& ray) const { return material -> GetRayColour(ray); }
+    virtual bool Hitted(const Ray& ray, vec3f& hitpoint, vec3f& normal, Side& side) const = 0;
+    virtual vec3f GetRayColour(const Ray& ray, const vec3f& hit_point, const vec3f& normal, const Side& side, const Scene& scene) const { return material -> GetRayColour(ray, hit_point, normal, side, scene); }
     Material* GetMaterial() const { return material; };
 };
 
@@ -104,7 +117,7 @@ public:
     Sphere(Material* in_material, vec3f& in_center, float in_radius) : Object(in_material), center(in_center), radius(in_radius) {};
     vec3f GetCenter() const { return center; };
     float GetRadius() const { return radius; };
-    bool Hitted(Ray& ray, vec3f& hitpoint) const;
+    bool Hitted(const Ray& ray, vec3f& hitpoint, vec3f& normal, Side& side) const;
 };
 
 //________class for Cilinders_________________________________
@@ -118,7 +131,7 @@ public:
     vec3f GetCenter() const { return center; };
     float GetRadius() const { return radius; };
     float GetHeight() const { return height; };
-    bool Hitted(Ray& ray, vec3f& hitpoint) const;
+    bool Hitted(const Ray& ray, vec3f& hitpoint, vec3f& normal, Side& side) const;
 };
 
 //--------------------------------------------------------
