@@ -8,32 +8,20 @@
 
 //--------ALL DEFINED CLASSES-------------------------
 class Material;
-class OrdinaryMaterial;
+class EmissiveMaterial;
+class DielectricMaterial;
 class DiffuseMaterial;
 class Scene;
 class Object;
+class Polygon;
 class PolygonalObject;
 class Sphere;
+class Cilinder;
 //----------------------------------------------------
 
 enum Side{
     INSIDE,
     OUTSIDE
-};
-
-//_______struct vertex for polygonal objects__________
-struct Vertex{
-    float x;
-    float y;
-    float z;
-};
-
-//_______struct polygon for polygonal objects_________
-struct Polygon{
-    unsigned first_vertex;
-    unsigned second_vertex;
-    unsigned third_vertex;
-    vec3f normal;
 };
 
 //--------------MATERIALS------------------------------
@@ -61,15 +49,12 @@ public:
 };
 
 class DiffuseMaterial : public Material {
-    vec3f colour;
-    float fuzzieness;
-    float albedo;
+    vec3f absorbation_spectre;
 public:
-    DiffuseMaterial(vec3f& in_colour, float in_fuzzieness, float in_albedo) : colour(in_colour), fuzzieness(in_fuzzieness), albedo(in_albedo) {};
-    vec3f GetColour() const { return colour; };
-    float GetFuzzieness() const { return fuzzieness; };
-    float GetAlbedo() const { return albedo; };
-    vec3f GetRayColour(Ray& ray) const ;
+    DiffuseMaterial(vec3f& in_absorbation_spectre) : absorbation_spectre(in_absorbation_spectre) {};
+    vec3f GetAbsorbationSpectre() const { return absorbation_spectre; };
+    vec3f Absorb(const vec3f& colour) const;
+    vec3f GetRayColour(const Ray& ray, const vec3f& hitpoint, const vec3f& normal, const Side& side, const Scene& scene) const ;
 };
 
 //------------------------------------------------------
@@ -96,16 +81,28 @@ public:
     Material* GetMaterial() const { return material; };
 };
 
+//_______class polygon for polygonal objects_________
+class Polygon{
+    vec3f first_vertex;
+    vec3f second_vertex;
+    vec3f third_vertex;
+    vec3f normal;
+public:
+    Polygon (const vec3f& in_first_vertex, const vec3f& in_second_vertex, const vec3f& in_third_vertex);
+    bool Hitted(const Ray& ray, vec3f& hitpoint, vec3f& normal, Side& side) const; //Moller-Trumbor algorithm
+    vec3f GetFirstVertex() const { return first_vertex; };
+    vec3f GetSecondVertex() const { return second_vertex; };
+    vec3f GetThirdVertex() const { return third_vertex; };
+    vec3f GetNormal() const { return normal; };
+};
+
 //________polygonal object class_________________________
 
 class PolygonalObject : public Object{
-    std::vector<Vertex> vertexes;
     std::vector<Polygon> polygons;
 public:
-    PolygonalObject(Material* in_material, const std::string& objfile_path);
-    bool Hitted(Ray& ray, vec3f& hitpoint) const;
-    virtual vec3f GetRayColour(Ray& ray) const;
-    ~PolygonalObject();
+    PolygonalObject(Material* in_material, std::vector<Polygon>& in_polygons) : Object(in_material), polygons(in_polygons) {}
+    bool Hitted(const Ray& ray, vec3f& hitpoint, vec3f& normal, Side& side) const;
 };
 
 //________class for spheres_______________________________

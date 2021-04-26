@@ -3,6 +3,7 @@
 
 #include "geometry.h"
 
+constexpr float PI = 3.1415;
 
 class Ray {
     vec3f direction;

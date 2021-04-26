@@ -28,6 +28,38 @@ vec3f DielectricMaterial::GetRayColour(const Ray& ray, const vec3f& hitpoint, co
     }
 }
 
+vec3f DiffuseMaterial :: Absorb(const vec3f& colour) const {
+    vec3f absorbed_colour;
+    absorbed_colour.x = colour.x * absorbation_spectre.x;
+    absorbed_colour.y = colour.y * absorbation_spectre.y;
+    absorbed_colour.z = colour.z * absorbation_spectre.z;
+    return absorbed_colour;
+}
+
+vec3f DiffuseMaterial::GetRayColour(const Ray& ray, const vec3f& hitpoint, const vec3f& normal, const Side& side, const Scene& scene) const {
+    vec3f max_recursion_colour(0.0f, 0.0f, 0.0f);
+    vec3f result_colour(0.0f, 0.0f, 0.0f);
+    unsigned number_of_diffused_rays = 5;
+    float intensivity;
+    float cosinus_sum;
+    std::vector<Ray> diffused_rays;
+    std::vector<float> cosinuses;
+    if (ray.GetCurRecursionDepth() < ray.GetMaxRecursionDepth()){
+        for (int i = 0; i < number_of_diffused_rays; i++) {
+            Ray diffused_ray = ray.Diffuse(hitpoint, normal);
+            diffused_rays.push_back(diffused_ray);
+            cosinuses.push_back(diffused_ray.GetDirection() * normal);
+            cosinus_sum += cosinuses.back();
+        }
+        for (int i = 0; i < number_of_diffused_rays; i++){
+            intensivity = cosinuses[i] / cosinus_sum;
+            result_colour = result_colour + Absorb((scene.Intersect(diffused_rays[i]) * intensivity));
+        }
+        return result_colour;
+    } else {
+        return max_recursion_colour;
+    }
+}
 
 vec3f Scene::Intersect(const Ray& ray) const {
     vec3f background_colour(0.6f, 0.8f, 1.0f);
@@ -55,6 +87,77 @@ vec3f Scene::Intersect(const Ray& ray) const {
         return background_colour;
     else {
         return objects[closest_object] -> GetRayColour(ray, min_hitpoint, min_normal, min_side, *this);
+    }
+}
+
+Polygon::Polygon(const vec3f& in_first_vertex, const vec3f& in_second_vertex, const vec3f& in_third_vertex) {
+    first_vertex = in_first_vertex;
+    second_vertex = in_second_vertex;
+    third_vertex = in_third_vertex;
+    normal = cross(first_vertex - second_vertex, first_vertex - third_vertex).normalize();
+}
+
+bool Polygon :: Hitted(const Ray& ray, vec3f& hitpoint, vec3f& in_normal, Side& side) const { //Moller-Trumbore algorithm
+    float eps = 1e-8;
+
+    vec3f e1 = second_vertex - first_vertex;
+    vec3f e2 = third_vertex - first_vertex;
+
+    vec3f pvec = cross(ray.GetDirection(), e2);
+    float det = e1 * pvec;
+
+    if (det < eps && det > -eps) {
+        return false;
+    }
+
+    float inv_det = 1 / det;
+    vec3f tvec = ray.GetStartingPoint() - first_vertex;
+    float u = (tvec * pvec) * inv_det;
+    if (u < 0 || u > 1) {
+        return false;
+    }
+
+    vec3f qvec = cross(tvec, e1);
+    float v = (ray.GetDirection() * qvec) * inv_det;
+    if (v < 0 || u + v > 1) {
+        return false;
+    }
+    float t = (e2 * qvec) * inv_det;
+    if (t > 0){
+        hitpoint = ray.GetStartingPoint() + (ray.GetDirection() * t);
+        if (det < 0) {
+            side = INSIDE;
+            in_normal = -normal;
+        } else {
+            side = OUTSIDE;
+            in_normal = normal;
+        }   
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool PolygonalObject :: Hitted(const Ray& ray, vec3f& hitpoint, vec3f& normal, Side& side) const {
+    vec3f infinity(1000.0f, 1000.0f, 1000.0f);
+    vec3f min_hitpoint = infinity;
+    vec3f min_normal;
+    Side min_side;
+    unsigned closest_polygon = -1;
+    for (int i = 0; i < polygons.size(); i++) {
+        if (polygons[i].Hitted(ray, hitpoint, normal, side)){
+             if ((hitpoint - ray.GetStartingPoint()).norm() < (min_hitpoint - ray.GetStartingPoint()).norm()) {
+                min_hitpoint = hitpoint;
+                min_normal = normal;
+                min_side = side;
+                closest_polygon = i;
+            }           
+        }
+    }
+    if ( closest_polygon == -1){
+        return false;
+    } else {
+        return true;
     }
 }
 

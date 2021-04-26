@@ -6,7 +6,7 @@
 #include "Image.h"
 #include "objects.h"
 
-constexpr float PI = 3.1415;
+
 
 class Camera {
     vec3f location;

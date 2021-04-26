@@ -65,40 +65,83 @@ int main(int argc, char** argv) {
     vec3f colour2(0.5f, 0.5f, 0.8f);
     vec3f colour3(0.4f, 0.4f, 0.4f);
 
+    vec3f absorbation_spectre(0.0f, 0.0f, 1.0f);
+
     EmissiveMaterial emissive1(colour1);
     EmissiveMaterial emissive2(colour2);
     EmissiveMaterial emissive3(colour3);
     DielectricMaterial glass(1.5f, 1.0f);
+    DiffuseMaterial cement(absorbation_spectre);
 
 //-------sphere creation------------------------------------------------------------
 
-    vec3f sphere_center(0.0f, 0.0f, 0.0f);
+    vec3f sphere_center(0.0f, 0.0f, 2.0f);
 
-    vec3f sphere_center1(2.5f, -4.0f, 0.0f);
+    vec3f sphere_center1(0.0f, -4.0f, 3.0f);
 
     Sphere sphere(&glass, sphere_center, 2.0f);
 
-    Sphere sphere1(&emissive1, sphere_center1, 1.0f);
+    Sphere sphere1(&cement, sphere_center1, 1.0f);
 
 //----------------------------------------------------------------------------------
 
 //-------cilinder creation----------------------------------------------------------
 
-    vec3f pedestal_center(0.0f, 0.0f, -2.5f);
+    vec3f pedestal_center(0.0f, 0.0f, -0.5f);
     Cilinder pedestal(&emissive2, pedestal_center, 2.0f, 1.0f);
-    vec3f table_center(0.0f, 0.0f, -3.0f);
-    Cilinder table(&emissive3, table_center, 10.0f, 1.0f);
+    vec3f table_center(0.0f, 0.0f, -1.5f);
+    Cilinder table(&cement, table_center, 10.0f, 1.0f);
+
+//----------------------------------------------------------------------------------
+
+//--------octahedron creation-------------------------------------------------------
+
+    std::vector<Polygon> octahedron_polygons;
+
+    vec3f vertex1(0.0f, 0.0f, 0.0f);
+    vec3f vertex2(2.0f, 0.0f, 2.0f);
+    vec3f vertex3(0.0f, 2.0f, 2.0f);
+    vec3f vertex4(-2.0f, 0.0f, 2.0f);
+    vec3f vertex5(0.0f, -2.0f, 2.0f);
+    vec3f vertex6(0.0f, 0.0f, 4.0f);
+
+    Polygon polygon1(vertex1, vertex3, vertex2);
+    octahedron_polygons.push_back(polygon1);
+
+    Polygon polygon2(vertex1, vertex4, vertex3);
+    octahedron_polygons.push_back(polygon2);
+
+    Polygon polygon3(vertex1, vertex5, vertex4);
+    octahedron_polygons.push_back(polygon3);
+
+    Polygon polygon4(vertex1, vertex2, vertex5);
+    octahedron_polygons.push_back(polygon4);
+
+    Polygon polygon5(vertex6, vertex2, vertex3);
+    octahedron_polygons.push_back(polygon5);
+
+    Polygon polygon6(vertex6, vertex3, vertex4);
+    octahedron_polygons.push_back(polygon6);
+
+    Polygon polygon7(vertex6, vertex4, vertex5);
+    octahedron_polygons.push_back(polygon7);
+
+    Polygon polygon8(vertex6, vertex5, vertex2);
+    octahedron_polygons.push_back(polygon8);
+
+    PolygonalObject octahedron(&glass, octahedron_polygons);
 
 //---------scene creation-----------------------------------------------------------
     Scene scene;
-    scene.AddObject(&sphere);
+//    scene.AddObject(&sphere);
 //    scene.AddObject(&pedestal);
-    scene.AddObject(&table);
+//    scene.AddObject(&table);
     scene.AddObject(&sphere1);
+//    scene.AddObject(&octahedron);
 //----------------------------------------------------------------------------------
     
 //---------camera creation----------------------------------------------------------
-    vec3f cam_location(0.0f, 5.0f, 2.0f);
+    vec3f cam_location(6.0f, 4.0f, 5.0f);
     vec3f viewvec = sphere_center - cam_location;
     vec2f phisical_screensize(2.0f, 2.0f);
     vec2u pixel_screensize(WINDOW_WIDTH, WINDOW_HEIGHT);
