@@ -39,9 +39,9 @@ vec3f DiffuseMaterial :: Absorb(const vec3f& colour) const {
 vec3f DiffuseMaterial::GetRayColour(const Ray& ray, const vec3f& hitpoint, const vec3f& normal, const Side& side, const Scene& scene) const {
     vec3f max_recursion_colour(0.0f, 0.0f, 0.0f);
     vec3f result_colour(0.0f, 0.0f, 0.0f);
-    unsigned number_of_diffused_rays = 5;
+    unsigned number_of_diffused_rays = 4;
     float intensivity;
-    float cosinus_sum;
+    float cosinus_sum = 0;
     std::vector<Ray> diffused_rays;
     std::vector<float> cosinuses;
     if (ray.GetCurRecursionDepth() < ray.GetMaxRecursionDepth()){
@@ -62,7 +62,8 @@ vec3f DiffuseMaterial::GetRayColour(const Ray& ray, const vec3f& hitpoint, const
 }
 
 vec3f Scene::Intersect(const Ray& ray) const {
-    vec3f background_colour(0.6f, 0.8f, 1.0f);
+    vec3f background_colour(0.3f, 0.6f, 0.7f);
+//    vec3f background_colour(0.6f, 0.8f, 1.0f);
 //    vec3f background_colour(0.0f, 0.0f, 0.0f);
     vec3f hitpoint;
     vec3f normal;
@@ -95,6 +96,7 @@ Polygon::Polygon(const vec3f& in_first_vertex, const vec3f& in_second_vertex, co
     second_vertex = in_second_vertex;
     third_vertex = in_third_vertex;
     normal = cross(first_vertex - second_vertex, first_vertex - third_vertex).normalize();
+//    std::cout << normal << std::endl;
 }
 
 bool Polygon :: Hitted(const Ray& ray, vec3f& hitpoint, vec3f& in_normal, Side& side) const { //Moller-Trumbore algorithm
@@ -229,7 +231,7 @@ bool Cilinder::Hitted(const Ray& ray, vec3f& hitpoint, vec3f& normal, Side& side
                         side = INSIDE;
                     } else if (fabs(hit2.z - center.z) < height/2){
                         hitpoint = hit2;
-                        normal = up * ((hitpoint - center) * up) - hitpoint;
+                        normal = (up * ((hitpoint - center) * up) - hitpoint).normalize();
                         side = INSIDE;
                     } else {
                         float t3 = (center.z - height/2 - startpoint.z) / direction.z;
@@ -254,7 +256,7 @@ bool Cilinder::Hitted(const Ray& ray, vec3f& hitpoint, vec3f& normal, Side& side
             vec3f hit2 = startpoint + (direction * t2);
             if (fabs(hit1.z - center.z) < height/2){
                 hitpoint = hit1;
-                normal = hitpoint - up * ((hitpoint - center) * up);
+                normal = (hitpoint - (center + (up * ((hitpoint - center) * up)))).normalize();
                 side = OUTSIDE;
                 return true;
             } else if(hit1.z > center.z + height/2){

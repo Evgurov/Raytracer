@@ -40,13 +40,13 @@ Ray Camera::Gen_ray(unsigned x, unsigned y) {
 }
 
 void Camera::Render(Image& screenBuffer, Scene& scene) { 
-    unsigned max_rays_number = 3;
+    unsigned max_rays_number = 1;
     Pixel pixel;
     vec3f zero(0.0f, 0.0f, 0.0f);
     vec3f colour = zero;
     for (unsigned i = 0; i < pixel_screensize.y; i++) {
         for (unsigned j  = 0; j < pixel_screensize.x; j++) {
-            if (i == 512 && j == 512)
+            if (i == 27 && j == 465)
                 colour = colour * 2;
             for (int k = 0; k < max_rays_number; k++){
                 Ray origin_ray = Gen_ray(j, i);
@@ -58,7 +58,11 @@ void Camera::Render(Image& screenBuffer, Scene& scene) {
             pixel.b = int(255.99 * colour.z); 
             pixel.a = 255;
             screenBuffer.PutPixel(j, i, pixel);
+            if (colour.x > 0.9){
+                colour = colour * 2;
+            }
             colour = zero;
+            printf("%f\n", float(i * pixel_screensize.x + j) / float(pixel_screensize.x * pixel_screensize.y) * 100);
         }
     }
 }

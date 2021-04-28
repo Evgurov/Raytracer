@@ -35,18 +35,19 @@ Ray Ray::Refract(const vec3f& hitpoint, const vec3f& normal, float new_refractiv
 }
 
 Ray Ray::Diffuse(const vec3f& hitpoint, const vec3f& normal) const {
-    float eps = 1e-4;
+    float eps1 = 1e-4;
+    float eps2 = 1e-3;
     vec3f not_normal = normal;
-    if (fabs(not_normal.x) < eps) {
+    if (fabs(not_normal.x) < eps1) {
         not_normal.x += 1;
-    } else if(fabs(not_normal.y) < eps) {
+    } else if(fabs(not_normal.y) < eps1) {
         not_normal.y += 1;
-    } else if(fabs(not_normal.z) < eps) {
+    } else if(fabs(not_normal.z) < eps1) {
         not_normal.z += 1;
     } else {
         not_normal.x += 1;
     }
-    vec3f e1 = (not_normal - (hitpoint + (normal * (not_normal * normal)))).normalize();
+    vec3f e1 = (not_normal - (normal * (not_normal * normal))).normalize();
     vec3f e2 = cross(normal, e1).normalize();
 
     float phi = float(std::rand());
@@ -55,9 +56,9 @@ Ray Ray::Diffuse(const vec3f& hitpoint, const vec3f& normal) const {
     float teta = float(std::rand());
     teta = teta / RAND_MAX * PI / 2;
 
-    vec3f new_direction = e1 * sin(teta) * cos(phi) + e2 * sin(teta) * sin(phi) + normal * cos(teta);
+    vec3f new_direction = ((e1 * sin(teta)) * cos(phi)) + ((e2 * sin(teta)) * sin(phi)) + (normal * cos(teta));
 
-    Ray diffused_ray(new_direction, hitpoint, cur_refractive_index, current_recursion_depth + 1);
+    Ray diffused_ray(new_direction, hitpoint + (new_direction * eps2), cur_refractive_index, current_recursion_depth + 1);
 
     return diffused_ray;
 }
