@@ -1,36 +1,35 @@
-# Model Ray Tracer renderer (C++, CPU)
+# Model Ray tracing renderer (C++, CPU)
 ## Dependencies
-It is implied that the project runs on `Linux'.
+The project was developed and ran on `Linux`.
 To work and build, the `OpenGL` library `glfw3` is required. You can install this by typing in the command line
-``
+```
 $ sudo apt-get install libglfw3-dev
 ```
 To build the program, the `g++` compiler and the `cmake` and `make` utilities are also required.
 
 ## Build and launch
 In the project folder:
-``
+```
 $ cmake ./
 $ make
 $ ./bin/main
 ```
-The project's goals did not include the user interface for creating a scene (but can be considered as its further development), so the result of the program is one - demonstration of the capabilities of the "engine": after rendering, a render of a predefined scene will appear in a separate window. You will see something like a panel house at night in a glass cube standing on a matte cube and several balls around (luminous, matte and translucent).
-Rendering takes place on the `cpu` and takes a significant amount of time, so by default a stripped-down image is generated (in my case on the `Intel Core i5-8250U CPU @ 1.60GHz` it takes a few minutes). There are several heavier pre-rendered images in the `./resources' folder.
+The project goals did not include the user interface for creating a scene (but can be considered as its further development), so the result of the program is one - demonstration of the capabilities of the "engine": after rendering, a render of a predefined scene will appear in a separate window. Rendering performs on the `cpu` and takes a significant amount of time, so by default a stripped-down image is generated. There are several heavier pre-rendered images in the `./resources` folder.
 
 ## Briefly about the work done
 In this project, I completely wrote a small engine for ray tracing in C++ (for educational purposes, pure C++ without STL). The only ready-made code used is pixel-by-pixel rendering of the window in OpenGL.
 
 Specifically implemented:
 
-- `lin_al.hpp': template library of n-dimensional vectors of arbitrary type with all basic operators and special vector operations
+- `geometry.h`: template library of n-dimensional vectors of arbitrary type with all basic operators and special vector operations
 
 - the `GraphicObjects` module:
 - camera object with all the necessary settings:
-- location and orientation in space
-- viewing angle fov
-- resolution of the camera matrix
-- anti-aliasing level (rays per pixel)
-- hierarchy of graphic objects with their own methods of interaction with the intersected beam and intersection search algorithm: graphic object ->
+* location and orientation in space
+* viewing angle fov
+* resolution of the camera matrix
+* anti-aliasing level (rays per pixel)
+* hierarchy of graphic objects with their own methods of interaction with the intersected beam and intersection search algorithm: graphic object ->
 - ball
 - polygon
 - polygonal object (collection of polygons)
