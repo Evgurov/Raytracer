@@ -43,15 +43,14 @@ Specifically implemented:
   * Class `scene` (collection of objects)
 
   * Interaction models:
-    - hierarchy of materials (models of interaction with the object). Interaction models are implemented:
     - `Schlick`: interaction with a translucent object taking into account:
-    - refractive coefficients (according to Snellius' law)
-    - the spectrum of internal light absorption (in the thickness of the material)
-    - the Fresnel factor (by means of the Schlick approximation)
-    - the effect of total internal reflection
+      * refractive coefficients (according to Snellius' law)
+      * the spectrum of internal light absorption (in the thickness of the material)
+      * the Fresnel factor (by means of the Schlick approximation)
+      * the effect of total internal reflection
     - `Lambert`: interaction with the absolute Lambert surface, taking into account
-    - angle of incidence on the material and total scattering (Lambert model)
-    - the spectrum of the surface half-absorption of light
+      * angle of incidence on the material and total scattering (Lambert model)
+      * the spectrum of the surface half-absorption of light
     - `SimpleEmission`: interaction with a simple radiating material (the most elementary model)
 
 - `main.cpp `: setting the scene and rendering using the modules listed above
