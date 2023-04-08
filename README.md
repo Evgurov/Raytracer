@@ -25,10 +25,10 @@ Specifically implemented:
 
 - the `camera` module:
   * camera object with all the necessary settings:
-  - location and orientation in space
-  - viewing angle fov
-  - resolution of the camera matrix
-  - anti-aliasing level (rays per pixel)
+    - location and orientation in space
+    - viewing angle fov
+    - resolution of the camera matrix
+    - anti-aliasing level (rays per pixel)
 - the `objects` module:
   * hierarchy of materials and graphic objects with their own methods of interaction with the intersected beam and intersection search algorithm.
   * Materials:
