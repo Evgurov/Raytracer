@@ -23,13 +23,13 @@ Specifically implemented:
 
 - `geometry.h`: template library of n-dimensional vectors of arbitrary type with all basic operators and special vector operations
 
-- the `camera` module:
+- `camera` module:
   * camera object with all the necessary settings:
     - location and orientation in space
     - viewing angle fov
     - resolution of the camera matrix
     - anti-aliasing level (rays per pixel)
-- the `objects` module:
+- `objects` module:
   * Hierarchy of materials and graphic objects with their own methods of interaction with the intersected beam and intersection search algorithm.
   * Materials:
     - Emissive
