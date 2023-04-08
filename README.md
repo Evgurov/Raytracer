@@ -30,7 +30,7 @@ Specifically implemented:
     - resolution of the camera matrix
     - anti-aliasing level (rays per pixel)
 - the `objects` module:
-  * hierarchy of materials and graphic objects with their own methods of interaction with the intersected beam and intersection search algorithm.
+  * Hierarchy of materials and graphic objects with their own methods of interaction with the intersected beam and intersection search algorithm.
   * Materials:
     - Emissive
     - Dielectric
