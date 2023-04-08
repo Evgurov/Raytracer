@@ -62,4 +62,4 @@ Also:
 - to check the intersection with polygons, a fast Meller-Trambor algorithm is implemented
 
 ---
-Gurov Evgeny 2021.
+Gurov Evgeny, 2021.
