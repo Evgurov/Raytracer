@@ -52,6 +52,8 @@ Specifically implemented:
       * angle of incidence on the material and total scattering (Lambert model)
       * the spectrum of the surface half-absorption of light
     - SimpleEmission: interaction with a simple radiating material (the most elementary model)
+   
+- `ray` module: class 'Ray` storing information about the ray, controlling its recursion depth and containing `Reflect`, `Refract` and `Diffuse` methods.
 
 - `main.cpp `: setting the scene and rendering using the modules listed above
 
