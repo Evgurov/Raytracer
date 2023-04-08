@@ -23,17 +23,24 @@ Specifically implemented:
 
 - `geometry.h`: template library of n-dimensional vectors of arbitrary type with all basic operators and special vector operations
 
-- the `GraphicObjects` module:
-- camera object with all the necessary settings:
-* location and orientation in space
-* viewing angle fov
-* resolution of the camera matrix
-* anti-aliasing level (rays per pixel)
-* hierarchy of graphic objects with their own methods of interaction with the intersected beam and intersection search algorithm: graphic object ->
-- ball
-- polygon
-- polygonal object (collection of polygons)
-- ray object with appropriate methods (e.g. `Ray::Cast()`)
+- the `camera` module:
+  * camera object with all the necessary settings:
+  * location and orientation in space
+  * viewing angle fov
+  * resolution of the camera matrix
+  * anti-aliasing level (rays per pixel)
+- the `objects` module:
+  * hierarchy of materials and graphic objects with their own methods of interaction with the intersected beam and intersection search algorithm.
+  * Materials:
+    - Emissive
+    - Dielectric
+    - Diffuse
+  * Objects:
+    - Polygon
+    - Polygonal object(collection of plygons)
+    - Sphere
+    - Cilinder
+  * Class `scene` (collection of objects)
 
 - module `interactonModels`:
 - hierarchy of materials (models of interaction with the object). Interaction models are implemented:
